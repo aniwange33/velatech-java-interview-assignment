@@ -6,5 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface CardDetailRepository extends JpaRepository<CardDetail,Long> {
-    CardDetail findByIin(String iin);
+    CardDetail findByIin(Long iin);
 }
