@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.4.xsd">
+    <changeSet author="Aniwange" id="200320192" >
+        <sql>
+            CREATE TABLE card_detail (
+            id BIGINT NOT NULL AUTO_INCREMENT,
+            iin VARCHAR(255) NOT NULL,
+            scheme VARCHAR(255) NOT NULL,
+            name VARCHAR(255) NOT NULL,
+            bank VARCHAR(255) NOT NULL,
+            stats INTEGER NOT NULL,
+            CONSTRAINT PK_id PRIMARY KEY (id)
+            );
+        </sql>
+        <rollback>
+            DROP TABLE library;
+        </rollback>
+    </changeSet>
+
+</databaseChangeLog>
