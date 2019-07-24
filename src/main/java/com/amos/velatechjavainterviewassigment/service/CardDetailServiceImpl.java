@@ -18,14 +18,14 @@ public class CardDetailServiceImpl  implements CardDetailService {
     }
 
     @Override
-    public CardDetail findByIin(Long iin) {
+    public CardDetail findByIin(String iin) {
         return  cardDetailRepository.findByIin(iin);
     }
 
     @Override
-    public CardDetail updateStats(Long iin) {
+    public CardDetail updateStats(String iin) {
         CardDetail cardDetail=cardDetailRepository.findByIin(iin);
-        cardDetail.setStats(Integer.valueOf(cardDetail.getStats())+1);
+        cardDetail.setStats(cardDetail.getStats()+1);
         return cardDetailRepository.save(cardDetail);
     }
 

@@ -36,26 +36,19 @@ public class CardVerificationController {
             return new ResponseEntity<>("Wrong IIN , IIN is the first 6 to 8 digits of your Card.", HttpStatus.BAD_REQUEST);
         }
 
-        final String URL= "https://lookup.binlist.net/"+IIN;
-
+        final String URL= "https://lookup.binlist.net/"+String.valueOf(IIN);
+        System.out.printf(URL);
         Optional<GeneralResponse> response =Optional.ofNullable(restTemplateConfig.getForObject(URL,GeneralResponse.class));
         if(response.isPresent() && ! response.toString().isEmpty()) {
             CardVerificationResponseJSON cardVerificationResponseJSON = getCardVerificationResponseJSON(response);
-            Optional<CardDetail> cardDetail=Optional.ofNullable(cardDetailService.findByIin(IIN));
+            Optional<CardDetail> cardDetail=Optional.ofNullable(cardDetailService.findByIin(String.valueOf(IIN)));
             if(cardDetail.isPresent()){
-                cardDetailService.updateStats(IIN);
+                cardDetailService.updateStats(String.valueOf(IIN));
                 return new ResponseEntity<>(cardVerificationResponseJSON, HttpStatus.OK);
             }
-            CardDetail cardDetail1=CardDetail.builder()
-                    .bank(response.get().getBank().getName())
-                    .iin(String.valueOf(IIN))
-                    .scheme(response.get().getScheme())
-                    .stats(1)
-                    .build();
+            CardDetail cardDetail1=CardDetail.createCardDetail(String.valueOf(IIN),response.get().getScheme(), response.get().getBank().getName(),1);
             cardDetailService.insert(cardDetail1);
             return new ResponseEntity<>(cardVerificationResponseJSON, HttpStatus.OK);
-
-
         }
 
         return new ResponseEntity<>("Invalid Card", HttpStatus.NOT_FOUND);
