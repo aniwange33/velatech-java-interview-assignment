@@ -18,9 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping(value = "api/")
@@ -69,11 +67,12 @@ public class CardVerificationController {
         if (cardDetailList.isPresent()) {
             StatsReport statsReport = StatsReport.createStatsReport(start, limit, cardDetailList.get().size());
             statsReport.setSuccess(true);
-            List<String> payloadList = new ArrayList<>();
+
+            Map<String, Integer> stringMap = new HashMap<>();
             for (int i = start - 1; i < limit; i++) {
-                payloadList.add(cardDetailList.get().get(i).getIin() + " : " + cardDetailList.get().get(i).getStats());
+                stringMap.put(cardDetailList.get().get(i).getIin(), cardDetailList.get().get(i).getStats());
             }
-            statsReport.setPayload(payloadList);
+            statsReport.setPayload(stringMap);
             return new ResponseEntity<>(statsReport, HttpStatus.OK);
         }
         return ResponseEntity.ok("no content");
