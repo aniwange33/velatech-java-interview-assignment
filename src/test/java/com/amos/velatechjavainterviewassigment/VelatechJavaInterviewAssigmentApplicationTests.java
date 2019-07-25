@@ -1,6 +1,9 @@
 package com.amos.velatechjavainterviewassigment;
 
+import com.amos.velatechjavainterviewassigment.model.CardDetail;
+import com.amos.velatechjavainterviewassigment.service.CardDetailService;
 import com.google.gson.Gson;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +27,9 @@ public class VelatechJavaInterviewAssigmentApplicationTests {
 	@Autowired
 	MockMvc  mockMvc;
 
+	@Autowired
+	CardDetailService cardDetailService;
+
 	@Test
 	public void contextLoads() {
 	}
@@ -40,4 +46,12 @@ public class VelatechJavaInterviewAssigmentApplicationTests {
 
 		System.out.println(gson.toJson(resultActions.andReturn().getResponse().getContentAsString()));
 	}
+
+	@Test
+	public  void  shouldTestFindByIin(){
+		CardDetail cardDetail=CardDetail.createCardDetail("45717360","visa","Jyske Bank",3);
+		cardDetail.setId(1l);
+		 Assert.assertEquals(cardDetail,cardDetailService.findByIin("45717360"));
+	}
+	
 }
