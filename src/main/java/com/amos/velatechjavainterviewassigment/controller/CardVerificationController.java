@@ -1,9 +1,7 @@
 package com.amos.velatechjavainterviewassigment.controller;
 
 
-import com.amos.velatechjavainterviewassigment.Dto.CardVerificationResponseJSON;
-import com.amos.velatechjavainterviewassigment.Dto.GeneralResponse;
-import com.amos.velatechjavainterviewassigment.Dto.SchemeCardTypeBank;
+import com.amos.velatechjavainterviewassigment.Dto.*;
 import com.amos.velatechjavainterviewassigment.model.CardDetail;
 import com.amos.velatechjavainterviewassigment.service.CardDetailService;
 import org.slf4j.Logger;
@@ -17,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,22 +30,23 @@ public class CardVerificationController {
     CardDetailService cardDetailService;
 
     @GetMapping(value = "card-scheme/verify")
-    ResponseEntity<?> verifyCard(@RequestParam long IIN){
-        if(IIN<100000){
+    ResponseEntity<?> verifyCard(@RequestParam long IIN) {
+        if (IIN < 100000) {
             return new ResponseEntity<>("Wrong IIN , IIN is the first 6 to 8 digits of your Card.", HttpStatus.BAD_REQUEST);
         }
 
-        final String URL= "https://lookup.binlist.net/"+String.valueOf(IIN);
+        final String URL = "https://lookup.binlist.net/" + String.valueOf(IIN);
         System.out.printf(URL);
-        Optional<GeneralResponse> response =Optional.ofNullable(restTemplateConfig.getForObject(URL,GeneralResponse.class));
-        if(response.isPresent() && ! response.toString().isEmpty()) {
+        // I need to catch invalid card error reminder"
+        Optional<GeneralResponse> response = Optional.ofNullable(restTemplateConfig.getForObject(URL, GeneralResponse.class));
+        if (response.isPresent() && !response.toString().isEmpty()) {
             CardVerificationResponseJSON cardVerificationResponseJSON = getCardVerificationResponseJSON(response);
-            Optional<CardDetail> cardDetail=Optional.ofNullable(cardDetailService.findByIin(String.valueOf(IIN)));
-            if(cardDetail.isPresent()){
+            Optional<CardDetail> cardDetail = Optional.ofNullable(cardDetailService.findByIin(String.valueOf(IIN)));
+            if (cardDetail.isPresent()) {
                 cardDetailService.updateStats(String.valueOf(IIN));
                 return new ResponseEntity<>(cardVerificationResponseJSON, HttpStatus.OK);
             }
-            CardDetail cardDetail1=CardDetail.createCardDetail(String.valueOf(IIN),response.get().getScheme(), response.get().getBank().getName(),1);
+            CardDetail cardDetail1 = CardDetail.createCardDetail(String.valueOf(IIN), response.get().getScheme(), response.get().getBank().getName(), 1);
             cardDetailService.insert(cardDetail1);
             return new ResponseEntity<>(cardVerificationResponseJSON, HttpStatus.OK);
         }
@@ -54,21 +54,26 @@ public class CardVerificationController {
         return new ResponseEntity<>("Invalid Card", HttpStatus.NOT_FOUND);
     }
 
-
-
-    private CardVerificationResponseJSON getCardVerificationResponseJSON(Optional<GeneralResponse> response) {
-        return CardVerificationResponseJSON.builder()
-                        .success(true)
-                        .payload(SchemeCardTypeBank.from(response.get().getScheme(),response.get().getType(),response.get().getBank().getName()))
-                        .build();
-    }
-
     @GetMapping(value = "card-scheme/stats")
-    ResponseEntity<?> verifyCard( @RequestParam int start, @RequestParam int limit){
-        Optional<List<CardDetail>> cardDetailList= Optional.ofNullable(cardDetailService.findAllCardDetails());
-        if(cardDetailList.isPresent()){
-            return new ResponseEntity<>(cardDetailList.get(),HttpStatus.OK);
+    ResponseEntity<?> verifyCard(@RequestParam int start, @RequestParam int limit) {
+        Optional<List<CardDetail>> cardDetailList = Optional.ofNullable(cardDetailService.findAllCardDetails());
+        if (cardDetailList.isPresent()) {
+            StatsReport statsReport = StatsReport.createStatsReport(start, limit, cardDetailList.get().size());
+            List<String> payloadLgitist = new ArrayList<>();
+            for (int i = start - 1; i < limit; i++) {
+                payloadList.add(cardDetailList.get().get(i).getIin() + " : " + cardDetailList.get().get(i).getStats());
+            }
+            statsReport.setPayload(payloadList);
+            return new ResponseEntity<>(statsReport, HttpStatus.OK);
         }
         return ResponseEntity.ok("no content");
     }
+
+    private CardVerificationResponseJSON getCardVerificationResponseJSON(Optional<GeneralResponse> response) {
+        return CardVerificationResponseJSON.builder()
+                .success(true)
+                .payload(SchemeCardTypeBank.from(response.get().getScheme(), response.get().getType(), response.get().getBank().getName()))
+                .build();
+    }
+
 }

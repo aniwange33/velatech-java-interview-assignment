@@ -29,9 +29,4 @@ public class CardDetail {
         return new CardDetail(iin, scheme, bank, stats);
     }
 
-    public String getStatsDisplay(){
-        return ""+iin+"" +" : "+ stats;
-    }
-
-
 }
