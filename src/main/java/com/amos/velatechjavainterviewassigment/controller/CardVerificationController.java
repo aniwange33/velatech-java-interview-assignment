@@ -31,6 +31,9 @@ public class CardVerificationController {
     CardDetailService cardDetailService;
 
     private Optional<GeneralResponse> response;
+    private boolean isResponseValid;
+    private boolean isCardPresent;
+    private boolean cardDetailListPresent;
 
     @GetMapping(value = "card-scheme/verify")
     ResponseEntity<?> verifyCard(@RequestParam long IIN) {
@@ -40,41 +43,54 @@ public class CardVerificationController {
 
         final String URL = "https://lookup.binlist.net/" + String.valueOf(IIN);
 
+
         try{
             response = Optional.ofNullable(restTemplateConfig.getForObject(URL, GeneralResponse.class));
         }catch (Exception errorException){
             return new ResponseEntity<>("Invalid Card", HttpStatus.NOT_FOUND);
         }
 
-        if (response.isPresent() && !response.toString().isEmpty()) {
+        isResponseValid = response.isPresent() && !response.toString().isEmpty();
+
+        if (isResponseValid) {
             CardVerificationResponseJSON cardVerificationResponseJSON = getCardVerificationResponseJSON(response);
             Optional<CardDetail> cardDetail = Optional.ofNullable(cardDetailService.findByIin(String.valueOf(IIN)));
-            if (cardDetail.isPresent()) {
+            isCardPresent = cardDetail.isPresent();
+
+            if (isCardPresent) {
                 cardDetailService.updateStats(String.valueOf(IIN));
                 return new ResponseEntity<>(cardVerificationResponseJSON, HttpStatus.OK);
             }
+
             CardDetail cardDetail1 = CardDetail.createCardDetail(String.valueOf(IIN), response.get().getScheme(), response.get().getBank().getName(), 1);
             cardDetailService.insert(cardDetail1);
             return new ResponseEntity<>(cardVerificationResponseJSON, HttpStatus.OK);
+
         }
 
         return new ResponseEntity<>("Invalid Card", HttpStatus.NOT_FOUND);
     }
 
     @GetMapping(value = "card-scheme/stats")
-    ResponseEntity<?> verifyCard(@RequestParam int start, @RequestParam int limit) {
+    ResponseEntity<?> getCardStats(@RequestParam int start, @RequestParam int limit) {
         Optional<List<CardDetail>> cardDetailList = Optional.ofNullable(cardDetailService.findAllCardDetails());
-        if (cardDetailList.isPresent()) {
+
+        cardDetailListPresent = cardDetailList.isPresent();
+
+        if (cardDetailListPresent) {
             StatsReport statsReport = StatsReport.createStatsReport(start, limit, cardDetailList.get().size());
             statsReport.setSuccess(true);
 
-            Map<String, Integer> stringMap = new HashMap<>();
+            Map<String, Integer> statsReportMap = new HashMap<>();
+
             for (int i = start - 1; i < limit; i++) {
-                stringMap.put(cardDetailList.get().get(i).getIin(), cardDetailList.get().get(i).getStats());
+                statsReportMap.put(cardDetailList.get().get(i).getIin(), cardDetailList.get().get(i).getStats());
             }
-            statsReport.setPayload(stringMap);
+
+            statsReport.setPayload(statsReportMap);
             return new ResponseEntity<>(statsReport, HttpStatus.OK);
         }
+
         return ResponseEntity.ok("no content");
     }
 
@@ -83,6 +99,7 @@ public class CardVerificationController {
                 .success(true)
                 .payload(SchemeCardTypeBank.from(response.get().getScheme(), response.get().getType(), response.get().getBank().getName()))
                 .build();
+
     }
 
 }
