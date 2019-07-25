@@ -59,7 +59,7 @@ public class CardVerificationController {
         Optional<List<CardDetail>> cardDetailList = Optional.ofNullable(cardDetailService.findAllCardDetails());
         if (cardDetailList.isPresent()) {
             StatsReport statsReport = StatsReport.createStatsReport(start, limit, cardDetailList.get().size());
-            List<String> payloadLgitist = new ArrayList<>();
+            List<String> payloadList = new ArrayList<>();
             for (int i = start - 1; i < limit; i++) {
                 payloadList.add(cardDetailList.get().get(i).getIin() + " : " + cardDetailList.get().get(i).getStats());
             }
