@@ -16,7 +16,7 @@
             );
         </sql>
         <rollback>
-            DROP TABLE library;
+            DROP TABLE card_detail;
         </rollback>
     </changeSet>
 

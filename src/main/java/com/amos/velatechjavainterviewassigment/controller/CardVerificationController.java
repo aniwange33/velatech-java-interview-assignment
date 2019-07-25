@@ -41,8 +41,7 @@ public class CardVerificationController {
         }
 
         final String URL = "https://lookup.binlist.net/" + String.valueOf(IIN);
-        System.out.printf(URL);
-        // I need to catch invalid card error reminder"
+
         try{
             response = Optional.ofNullable(restTemplateConfig.getForObject(URL, GeneralResponse.class));
         }catch (Exception errorException){
