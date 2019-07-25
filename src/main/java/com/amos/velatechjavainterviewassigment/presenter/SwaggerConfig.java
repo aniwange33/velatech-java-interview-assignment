@@ -24,7 +24,7 @@ public class SwaggerConfig {
                 .apiInfo(apiInfo());
     }
     private ApiInfo apiInfo() {
-        return new ApiInfo("Card Verification  Management API for VelaTech ","Manage estate tenants", "version 1.0", "Terms of service", new Contact("Amos", "not available", "terteseamos@gmail.com"), "API License", "not found",
+        return new ApiInfo("Card Verification  Management API for VelaTech ","vela tech java assigment", "version 1.0", "Terms of service", new Contact("Amos", "not available", "terteseamos@gmail.com"), "API License", "not found",
                 Collections.emptyList());
     }
 

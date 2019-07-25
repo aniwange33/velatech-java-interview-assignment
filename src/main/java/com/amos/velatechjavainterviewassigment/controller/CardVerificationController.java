@@ -1,7 +1,10 @@
 package com.amos.velatechjavainterviewassigment.controller;
 
 
-import com.amos.velatechjavainterviewassigment.Dto.*;
+import com.amos.velatechjavainterviewassigment.Dto.CardVerificationResponseJSON;
+import com.amos.velatechjavainterviewassigment.Dto.GeneralResponse;
+import com.amos.velatechjavainterviewassigment.Dto.SchemeCardTypeBank;
+import com.amos.velatechjavainterviewassigment.Dto.StatsReport;
 import com.amos.velatechjavainterviewassigment.model.CardDetail;
 import com.amos.velatechjavainterviewassigment.service.CardDetailService;
 import org.slf4j.Logger;
@@ -29,6 +32,8 @@ public class CardVerificationController {
     @Autowired
     CardDetailService cardDetailService;
 
+    private Optional<GeneralResponse> response;
+
     @GetMapping(value = "card-scheme/verify")
     ResponseEntity<?> verifyCard(@RequestParam long IIN) {
         if (IIN < 100000) {
@@ -38,7 +43,12 @@ public class CardVerificationController {
         final String URL = "https://lookup.binlist.net/" + String.valueOf(IIN);
         System.out.printf(URL);
         // I need to catch invalid card error reminder"
-        Optional<GeneralResponse> response = Optional.ofNullable(restTemplateConfig.getForObject(URL, GeneralResponse.class));
+        try{
+            response = Optional.ofNullable(restTemplateConfig.getForObject(URL, GeneralResponse.class));
+        }catch (Exception errorException){
+            return new ResponseEntity<>("Invalid Card", HttpStatus.NOT_FOUND);
+        }
+
         if (response.isPresent() && !response.toString().isEmpty()) {
             CardVerificationResponseJSON cardVerificationResponseJSON = getCardVerificationResponseJSON(response);
             Optional<CardDetail> cardDetail = Optional.ofNullable(cardDetailService.findByIin(String.valueOf(IIN)));
@@ -59,6 +69,7 @@ public class CardVerificationController {
         Optional<List<CardDetail>> cardDetailList = Optional.ofNullable(cardDetailService.findAllCardDetails());
         if (cardDetailList.isPresent()) {
             StatsReport statsReport = StatsReport.createStatsReport(start, limit, cardDetailList.get().size());
+            statsReport.setSuccess(true);
             List<String> payloadList = new ArrayList<>();
             for (int i = start - 1; i < limit; i++) {
                 payloadList.add(cardDetailList.get().get(i).getIin() + " : " + cardDetailList.get().get(i).getStats());

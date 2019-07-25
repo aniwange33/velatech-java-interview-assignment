@@ -8,6 +8,7 @@ import java.util.List;
 @Getter
 @Setter
 public class StatsReport {
+    private boolean success;
     private int start;
     private int limit;
     private int size;
