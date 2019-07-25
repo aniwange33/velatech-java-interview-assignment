@@ -53,5 +53,5 @@ public class VelatechJavaInterviewAssigmentApplicationTests {
 		cardDetail.setId(1l);
 		 Assert.assertEquals(cardDetail,cardDetailService.findByIin("45717360"));
 	}
-	
+
 }
