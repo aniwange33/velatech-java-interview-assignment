@@ -1,0 +1,26 @@
+version: '3.0'
+services:
+  velatech-mysql:
+   image: mysql:latest
+   command: --max_allowed_packet=52505856 --bulk_insert_buffer_size=52505856
+   environment:
+     - MYSQL_ROOT_PASSWORD=saveme@1
+     - MYSQL_DATABASE=velatech
+     - MYSQL_USER=demo
+     - MYSQL_PASSWORD=demo
+   ports:
+     - 3306
+   container_name: mysql
+
+  velatech-service:
+   build: ../velatech-java-interview-assigment
+#   build: target/*.jar
+   entrypoint: /wait-for-it.sh -t 5000 mysql:3306 -- java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -Dspring.profiles.active=container -jar app.jar
+   ports:
+     - 8000:8000
+   links:
+    - velatech-mysql:mysql
+   container_name: velatech_service
+networks:
+   default:
+     driver: bridge

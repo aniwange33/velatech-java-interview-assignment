@@ -86,8 +86,9 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<!--to maveen -->
 		</plugins>
-		<finalName>velatech-interview-assignment</finalName>
+		<finalName>vela-test</finalName>
 	</build>
 
 </project>
