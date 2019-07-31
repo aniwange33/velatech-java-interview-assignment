@@ -9,7 +9,7 @@ services:
      - MYSQL_USER=demo
      - MYSQL_PASSWORD=demo
    ports:
-     - 3306
+     - 3306:3306
    container_name: mysql
 
   velatech-service:

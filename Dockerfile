@@ -21,7 +21,9 @@ WORKDIR  /myapp
 
 # RUN apk add --no-cache bash
 RUN apk update && apk add bash
-COPY . /wait-for-it.sh/wait-for-it.sh
+
+
+COPY ./wait-for-it.sh /wait-for-it.sh
 RUN chmod +x /wait-for-it.sh
 
 # rename the jar file to app.jar

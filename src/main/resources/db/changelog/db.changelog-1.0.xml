@@ -9,7 +9,6 @@
             id BIGINT NOT NULL AUTO_INCREMENT,
             iin VARCHAR(255) NOT NULL,
             scheme VARCHAR(255) NOT NULL,
-            name VARCHAR(255) NOT NULL,
             bank VARCHAR(255) NOT NULL,
             stats INTEGER NOT NULL,
             CONSTRAINT PK_id PRIMARY KEY (id)

@@ -76,11 +76,14 @@ public class CardVerificationController {
         cardDetailListPresent = cardDetailList.isPresent();
 
         if (cardDetailListPresent) {
+
+            if(limit>cardDetailList.get().size()){
+                return ResponseEntity.ok("limit "+ limit +" is more than what is in database");
+            }
             StatsReport statsReport = StatsReport.createStatsReport(start, limit, cardDetailList.get().size());
             statsReport.setSuccess(true);
 
             Map<String, Integer> statsReportMap = new HashMap<>();
-
             for (int i = start - 1; i < limit; i++) {
                 statsReportMap.put(cardDetailList.get().get(i).getIin(), cardDetailList.get().get(i).getStats());
             }
