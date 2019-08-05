@@ -8,7 +8,10 @@ public class SchemeCardTypeBank {
     private String  type;
     private String  bank;
 
-// this fields  can be null in a situation where the card is not valid;
+    public SchemeCardTypeBank() {
+    }
+
+    // this fields  can be null in a situation where the card is not valid;
     private SchemeCardTypeBank(String scheme, String type, String bank) {
         this.scheme = scheme;
         this.type = type;

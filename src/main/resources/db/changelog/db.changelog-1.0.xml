@@ -8,8 +8,8 @@
             CREATE TABLE card_detail (
             id BIGINT NOT NULL AUTO_INCREMENT,
             iin VARCHAR(255) NOT NULL,
-            scheme VARCHAR(255) NOT NULL,
-            bank VARCHAR(255) NOT NULL,
+            scheme VARCHAR(255),
+            bank VARCHAR(255),
             stats INTEGER NOT NULL,
             CONSTRAINT PK_id PRIMARY KEY (id)
             );

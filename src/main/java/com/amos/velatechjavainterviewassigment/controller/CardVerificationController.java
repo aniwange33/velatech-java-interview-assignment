@@ -2,8 +2,8 @@ package com.amos.velatechjavainterviewassigment.controller;
 
 import com.amos.velatechjavainterviewassigment.Dto.CardVerificationResponseJSON;
 import com.amos.velatechjavainterviewassigment.Dto.GeneralResponse;
-import com.amos.velatechjavainterviewassigment.Dto.SchemeCardTypeBank;
 import com.amos.velatechjavainterviewassigment.Dto.StatsReport;
+import com.amos.velatechjavainterviewassigment.Dto.mapper.SchemeCardTypeBankMapper;
 import com.amos.velatechjavainterviewassigment.model.CardDetail;
 import com.amos.velatechjavainterviewassigment.service.CardDetailService;
 import org.slf4j.Logger;
@@ -16,7 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
-import java.util.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(value = "api/")
@@ -96,11 +100,11 @@ public class CardVerificationController {
     }
 
     private CardVerificationResponseJSON getCardVerificationResponseJSON(Optional<GeneralResponse> response) {
+        System.out.println("bank name  "+SchemeCardTypeBankMapper.CARD_VERIFICATION_MAPPER.schemeCardTypeBankFrom(response.get()));
         return CardVerificationResponseJSON.builder()
                 .success(true)
-                .payload(SchemeCardTypeBank.from(response.get().getScheme(), response.get().getType(), response.get().getBank().getName()))
+                .payload(SchemeCardTypeBankMapper.CARD_VERIFICATION_MAPPER.schemeCardTypeBankFrom(response.get()))
                 .build();
-
     }
 
 }
